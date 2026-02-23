@@ -1,9 +1,13 @@
 if (WITH_TLS)
-    set(OPENSSL_ROOT_DIR ${XMRIG_DEPS})
+    if (NOT OPENSSL_ROOT_DIR)
+        set(OPENSSL_ROOT_DIR ${XMRIG_DEPS})
+    endif()
 
     if (WIN32)
-        set(OPENSSL_USE_STATIC_LIBS TRUE)
-        set(OPENSSL_MSVC_STATIC_RT TRUE)
+        if (MSVC)
+            set(OPENSSL_USE_STATIC_LIBS TRUE)
+            set(OPENSSL_MSVC_STATIC_RT TRUE)
+        endif()
 
         set(EXTRA_LIBS ${EXTRA_LIBS} crypt32)
     elseif (APPLE)

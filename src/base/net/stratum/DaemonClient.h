@@ -94,6 +94,7 @@ private:
     enum {
         API_CRYPTONOTE_DEFAULT,
         API_MONERO,
+        API_DERO,
     } m_apiVersion = API_MONERO;
 
     BlockTemplate m_blocktemplate;
@@ -142,6 +143,45 @@ private:
 
     std::vector<char> m_ZMQSendBuf;
     std::vector<char> m_ZMQRecvBuf;
+
+#   if defined(XMRIG_FEATURE_TLS) && defined(XMRIG_ALGO_ASTROBWT)
+    static void onWSSConnect(uv_connect_t* req, int status);
+    static void onWSSRead(uv_stream_t* stream, ssize_t nread, const uv_buf_t* buf);
+    static void onWSSClose(uv_handle_t* handle);
+    static void onWSSShutdown(uv_handle_t* handle);
+
+    void WSSConnected();
+    bool WSSWrite(const char* data, size_t size);
+    void WSSRead(ssize_t nread, const uv_buf_t* buf);
+    void WSSParse();
+    bool WSSClose(bool shutdown = false);
+
+    struct WSS {
+        struct Header
+        {
+            uint8_t opcode : 4;
+            uint8_t reserved : 3;
+            uint8_t fin : 1;
+            uint8_t payload_len : 7;
+            uint8_t mask : 1;
+        };
+
+        uv_tcp_t* m_socket    = nullptr;
+        SSL_CTX* m_ctx        = nullptr;
+        BIO* m_read           = nullptr;
+        BIO* m_write          = nullptr;
+        SSL* m_ssl            = nullptr;
+        char m_buf[512]       = {};
+        bool m_handshake      = true;
+        uint64_t m_blocks     = 0;
+        uint64_t m_miniblocks = 0;
+        uint64_t m_height     = 0;
+        std::vector<char> m_data;
+        std::vector<char> m_message;
+
+        void cleanup();
+    } m_wss;
+#   endif
 };
 
 

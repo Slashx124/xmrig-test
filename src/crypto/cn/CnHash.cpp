@@ -34,6 +34,10 @@
 #   include "crypto/argon2/Hash.h"
 #endif
 
+#ifdef XMRIG_ALGO_ASTROBWT
+#   include "crypto/astrobwt/AstroBWT.h"
+#endif
+
 
 #define ADD_FN(algo) do {                                                                            \
         m_map[algo] = new cn_hash_fun_array{};                                                       \
@@ -377,6 +381,12 @@ xmrig::CnHash::CnHash()
     ADD_FN(Algorithm::CN_GR_3);
     ADD_FN(Algorithm::CN_GR_4);
     ADD_FN(Algorithm::CN_GR_5);
+#   endif
+
+#   ifdef XMRIG_ALGO_ASTROBWT
+    m_map[Algorithm::ASTROBWT_DERO_3] = new cn_hash_fun_array{};
+    m_map[Algorithm::ASTROBWT_DERO_3]->data[AV_SINGLE][Assembly::NONE]      = astrobwt::single_hash<Algorithm::ASTROBWT_DERO_3>;
+    m_map[Algorithm::ASTROBWT_DERO_3]->data[AV_SINGLE_SOFT][Assembly::NONE] = astrobwt::single_hash<Algorithm::ASTROBWT_DERO_3>;
 #   endif
 
 #   ifdef XMRIG_FEATURE_ASM

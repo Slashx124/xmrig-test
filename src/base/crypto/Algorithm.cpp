@@ -101,6 +101,11 @@ const char* Algorithm::kGHOSTRIDER      = "ghostrider";
 const char* Algorithm::kGHOSTRIDER_RTM  = "ghostrider";
 #endif
 
+#ifdef XMRIG_ALGO_ASTROBWT
+const char *Algorithm::kASTROBWT        = "astrobwt";
+const char *Algorithm::kASTROBWT_DERO_3 = "astrobwt/v3";
+#endif
+
 
 #define ALGO_NAME(ALGO)         { Algorithm::ALGO, Algorithm::k##ALGO }
 #define ALGO_ALIAS(ALGO, NAME)  { NAME, Algorithm::ALGO }
@@ -162,6 +167,10 @@ static const std::map<uint32_t, const char *> kAlgorithmNames = {
 
 #   ifdef XMRIG_ALGO_GHOSTRIDER
     ALGO_NAME(GHOSTRIDER_RTM),
+#   endif
+
+#   ifdef XMRIG_ALGO_ASTROBWT
+    ALGO_NAME(ASTROBWT_DERO_3),
 #   endif
 };
 
@@ -279,6 +288,12 @@ static const std::map<const char *, Algorithm::Id, aliasCompare> kAlgorithmAlias
     ALGO_ALIAS_AUTO(GHOSTRIDER_RTM), ALGO_ALIAS(GHOSTRIDER_RTM, "ghostrider/rtm"),
                                      ALGO_ALIAS(GHOSTRIDER_RTM, "gr"),
 #   endif
+
+#   ifdef XMRIG_ALGO_ASTROBWT
+    ALGO_ALIAS_AUTO(ASTROBWT_DERO_3), ALGO_ALIAS(ASTROBWT_DERO_3, "astrobwt/v3"),
+                                      ALGO_ALIAS(ASTROBWT_DERO_3, "astrobwt/dero"),
+                                      ALGO_ALIAS(ASTROBWT_DERO_3, "astrobwt"),
+#   endif
 };
 
 
@@ -353,7 +368,10 @@ std::vector<xmrig::Algorithm> xmrig::Algorithm::all(const std::function<bool(con
         RX_0, RX_WOW, RX_ARQ, RX_GRAFT, RX_SFX, RX_YADA,
         AR2_CHUKWA, AR2_CHUKWA_V2, AR2_WRKZ,
         KAWPOW_RVN,
-        GHOSTRIDER_RTM
+        GHOSTRIDER_RTM,
+#       ifdef XMRIG_ALGO_ASTROBWT
+        ASTROBWT_DERO_3,
+#       endif
     };
 
     Algorithms out;

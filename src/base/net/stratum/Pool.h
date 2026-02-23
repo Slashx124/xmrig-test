@@ -96,6 +96,7 @@ public:
 
     inline bool isNicehash() const                      { return m_flags.test(FLAG_NICEHASH); }
     inline bool isTLS() const                           { return m_flags.test(FLAG_TLS) || m_url.isTLS(); }
+    inline bool isWSS() const                           { return m_url.url().contains("wss://"); }
     inline bool isSNI() const                           { return m_flags.test(FLAG_SNI); }
     inline bool isValid() const                         { return m_url.isValid(); }
     inline const Algorithm &algorithm() const           { return m_algorithm; }

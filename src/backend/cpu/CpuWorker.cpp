@@ -21,6 +21,7 @@
 #include <mutex>
 
 
+#include "base/io/log/Log.h"
 #include "backend/cpu/Cpu.h"
 #include "backend/cpu/CpuWorker.h"
 #include "base/tools/Alignment.h"
@@ -222,6 +223,12 @@ bool xmrig::CpuWorker<N>::selfTest()
         return verify(Algorithm::AR2_CHUKWA, argon2_chukwa_test_out) &&
                verify(Algorithm::AR2_CHUKWA_V2, argon2_chukwa_v2_test_out) &&
                verify(Algorithm::AR2_WRKZ, argon2_wrkz_test_out);
+    }
+#   endif
+
+#   ifdef XMRIG_ALGO_ASTROBWT
+    if (m_algorithm.family() == Algorithm::ASTROBWT) {
+        return N == 1;
     }
 #   endif
 

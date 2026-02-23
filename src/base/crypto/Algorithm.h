@@ -82,6 +82,9 @@ public:
         AR2_CHUKWA_V2   = 0x61140000,   // "argon2/chukwav2"  Argon2id (Chukwa v2).
         AR2_WRKZ        = 0x61120000,   // "argon2/wrkz"      Argon2id (WRKZ)
         KAWPOW_RVN      = 0x6b0f0000,   // "kawpow/rvn"       KawPow (RVN)
+#       ifdef XMRIG_ALGO_ASTROBWT
+        ASTROBWT_DERO_3 = 0x41110100,   // "astrobwt/v3"      AstroBWT v3 (Dero HE)
+#       endif
     };
 
     enum Family : uint32_t {
@@ -95,7 +98,10 @@ public:
         RANDOM_X        = 0x72000000,
         ARGON2          = 0x61000000,
         KAWPOW          = 0x6b000000,
-        GHOSTRIDER      = 0x6c000000
+        GHOSTRIDER      = 0x6c000000,
+#       ifdef XMRIG_ALGO_ASTROBWT
+        ASTROBWT        = 0x41000000
+#       endif
     };
 
     static const char *kINVALID;
@@ -161,6 +167,11 @@ public:
 #   ifdef XMRIG_ALGO_GHOSTRIDER
     static const char* kGHOSTRIDER;
     static const char* kGHOSTRIDER_RTM;
+#   endif
+
+#   ifdef XMRIG_ALGO_ASTROBWT
+    static const char *kASTROBWT;
+    static const char *kASTROBWT_DERO_3;
 #   endif
 
     inline Algorithm() = default;

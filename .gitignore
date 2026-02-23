@@ -6,3 +6,7 @@ scripts/deps
 /src/backend/opencl/cl/cn/cryptonight_gen.cl
 .vscode
 /.qtcreator
+/derohe
+/benchmark
+/deps
+test_vectors/*.exe

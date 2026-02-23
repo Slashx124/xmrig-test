@@ -41,6 +41,10 @@ static const char kDaemonHttp[]            = "daemon+http://";
 static const char kDaemonHttps[]           = "daemon+https://";
 #endif
 
+#if defined(XMRIG_FEATURE_TLS) && defined(XMRIG_ALGO_ASTROBWT)
+static const char kWSS[]                   = "wss://";
+#endif
+
 } // namespace xmrig
 
 
@@ -102,6 +106,12 @@ bool xmrig::Url::parse(const char *url)
         else if (strncasecmp(url, kDaemonHttp, sizeof(kDaemonHttp) - 1) == 0) {
             m_scheme = DAEMON;
             m_tls    = false;
+        }
+#       endif
+#       if defined(XMRIG_FEATURE_TLS) && defined(XMRIG_ALGO_ASTROBWT)
+        else if (strncasecmp(url, kWSS, sizeof(kWSS) - 1) == 0) {
+            m_scheme = DAEMON;
+            m_tls    = true;
         }
 #       endif
         else {
