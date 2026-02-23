@@ -191,7 +191,14 @@ int64_t xmrig::DaemonClient::submit(const JobResult &result)
         char buf[256];
         const int n = snprintf(buf, sizeof(buf), "{\"jobid\":\"%s\",\"mbl_blob\":\"%s\"}", m_job.id().data(), data);
         if (0 <= n && n < static_cast<int>(sizeof(buf))) {
-            return WSSWrite(buf, n) ? 1 : -1;
+            const int64_t seq = m_sequence++;
+#           ifdef XMRIG_PROXY_PROJECT
+            m_results[seq] = SubmitResult(seq, result.diff, result.actualDiff(), result.id, 0);
+#           else
+            m_results[seq] = SubmitResult(seq, result.diff, result.actualDiff(), 0, result.backend);
+#           endif
+            m_wss.m_pendingSubmitId = seq;
+            return WSSWrite(buf, n) ? seq : -1;
         }
         return -1;
     }
@@ -1336,7 +1343,7 @@ void xmrig::DaemonClient::WSSParse()
 
     if (doc.HasMember(kLastError)) {
         String err = Json::getString(doc, kLastError, "");
-        if (!err.isEmpty()) {
+        if (!err.isEmpty() && !doc.HasMember(kBlockhashingBlob)) {
             LOG_ERR("%s " RED_BOLD("\"%s\""), tag(), err.data());
             return;
         }
@@ -1369,6 +1376,20 @@ void xmrig::DaemonClient::WSSParse()
 
         const uint64_t blocks = Json::getUint64(doc, "blocks");
         const uint64_t miniblocks = Json::getUint64(doc, "miniblocks");
+        const uint64_t rejected = Json::getUint64(doc, "rejected");
+
+        if (m_wss.m_pendingSubmitId >= 0) {
+            const int64_t submitId = m_wss.m_pendingSubmitId;
+            m_wss.m_pendingSubmitId = -1;
+
+            if (rejected > m_wss.m_rejected) {
+                const String lastErr = Json::getString(doc, kLastError, "rejected by pool");
+                handleSubmitResponse(submitId, lastErr.data());
+            }
+            else {
+                handleSubmitResponse(submitId, nullptr);
+            }
+        }
 
         if ((blocks != m_wss.m_blocks) || (miniblocks != m_wss.m_miniblocks) || (height != m_wss.m_height)) {
             LOG_INFO("%s " GREEN_BOLD("%" PRIu64 " blocks, %" PRIu64 " mini blocks"), tag(), blocks, miniblocks);
@@ -1376,6 +1397,8 @@ void xmrig::DaemonClient::WSSParse()
             m_wss.m_miniblocks = miniblocks;
             m_wss.m_height = height;
         }
+
+        m_wss.m_rejected = rejected;
 
         m_listener->onJobReceived(this, m_job, doc);
         return;
@@ -1413,7 +1436,9 @@ void xmrig::DaemonClient::WSS::cleanup()
     m_handshake = true;
     m_blocks = 0;
     m_miniblocks = 0;
+    m_rejected = 0;
     m_height = 0;
+    m_pendingSubmitId = -1;
     m_data.clear();
     m_message.clear();
 }
