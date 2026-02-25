@@ -83,7 +83,7 @@ public:
         AR2_WRKZ        = 0x61120000,   // "argon2/wrkz"      Argon2id (WRKZ)
         KAWPOW_RVN      = 0x6b0f0000,   // "kawpow/rvn"       KawPow (RVN)
 #       ifdef XMRIG_ALGO_ASTROBWT
-        ASTROBWT_DERO_3 = 0x41110100,   // "astrobwt/v3"      AstroBWT v3 (Dero HE)
+        ASTROBWT_DERO_3 = 0x41140100,   // "astrobwt/v3"      AstroBWT v3 (Dero HE) - l3=1MB for ScratchData+buckets
 #       endif
     };
 

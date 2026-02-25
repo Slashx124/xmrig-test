@@ -34,6 +34,8 @@ constexpr uint32_t MAX_LENGTH = (256 * 384) - 1;
 struct ScratchData {
     uint8_t  data[MAX_LENGTH + 64];
     int32_t  sa[MAX_LENGTH];
+    int32_t  bucket_a[256];
+    int32_t  bucket_b[256 * 256];
     uint8_t* sa_bytes() { return reinterpret_cast<uint8_t*>(sa); }
 };
 

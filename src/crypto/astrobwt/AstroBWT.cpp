@@ -20,6 +20,7 @@
 #include "crypto/astrobwt/sha256_utils.h"
 #include "crypto/astrobwt/hash_utils.h"
 #include "crypto/astrobwt/sais.h"
+#include "crypto/astrobwt/divsufsort.h"
 #include "crypto/astrobwt/Salsa20.hpp"
 #include "crypto/cn/CryptoNight.h"
 
@@ -34,6 +35,7 @@ static bool s_initialized = false;
 
 void init()
 {
+    sha256_init_hw();
     s_initialized = true;
 }
 
@@ -46,7 +48,7 @@ bool astrobwt_dero_v3(const void* input_data, uint32_t input_size, void* scratch
     memset(step_3, 0, sizeof(step_3));
 
     uint8_t sha_key[32];
-    sha256(static_cast<const uint8_t*>(input_data), input_size, sha_key);
+    sha256_auto(static_cast<const uint8_t*>(input_data), input_size, sha_key);
 
     const uint64_t iv = 0;
     ZeroTier::Salsa20 salsa(sha_key, &iv);
@@ -119,10 +121,10 @@ bool astrobwt_dero_v3(const void* input_data, uint32_t input_size, void* scratch
         data_len = MAX_LENGTH;
     }
 
-    memset(scratch->sa, 0, data_len * sizeof(int32_t));
-    build_suffix_array(scratch->data, scratch->sa, static_cast<int32_t>(data_len));
+    divsufsort(scratch->data, scratch->sa, static_cast<int32_t>(data_len),
+               scratch->bucket_a, scratch->bucket_b);
 
-    sha256(reinterpret_cast<const uint8_t*>(scratch->sa), data_len * 4, output_hash);
+    sha256_auto(reinterpret_cast<const uint8_t*>(scratch->sa), data_len * 4, output_hash);
 
     return true;
 }

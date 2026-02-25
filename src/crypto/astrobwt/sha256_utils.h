@@ -123,6 +123,19 @@ static inline void sha256(const uint8_t *data, size_t len, uint8_t hash[32])
     sha256_final(&ctx, hash);
 }
 
+void sha256_init_hw();
+bool has_sha_ni();
+void sha256_ni(const uint8_t *data, size_t len, uint8_t hash[32]);
+
+static inline void sha256_auto(const uint8_t *data, size_t len, uint8_t hash[32])
+{
+    if (has_sha_ni()) {
+        sha256_ni(data, len, hash);
+    } else {
+        sha256(data, len, hash);
+    }
+}
+
 } // namespace astrobwt
 } // namespace xmrig
 

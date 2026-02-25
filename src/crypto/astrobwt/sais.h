@@ -15,6 +15,7 @@
 #include <cstring>
 #include <vector>
 
+
 namespace xmrig {
 namespace astrobwt {
 
